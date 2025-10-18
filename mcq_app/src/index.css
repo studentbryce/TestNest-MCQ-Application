@@ -1,0 +1,82 @@
+:root {
+  /* TestNest Theme Configuration */
+  --tn-primary: #513521;       /* Dark brown - main brand color */
+  --tn-secondary: #EAD7C2;     /* Light beige - secondary/accent */
+  --tn-accent: #A7D2CB;        /* Soft green - highlights */
+  --tn-background: #FFF9E5;    /* Warm white - backgrounds */
+  --tn-text: #2F2F2F;          /* Dark gray - body text */
+  --tn-text-dark: #2F2F2F;     /* Dark gray - emphasis text */
+  --tn-card-background: #ead7c236; /* Translucent beige - cards and containers */
+  
+  /* Font families */
+  --tn-font-title: 'Quicksand', sans-serif;    /* Headings and titles */
+  --tn-font-body: 'Inter', sans-serif;         /* Body text and labels */
+  --tn-font-logo: 'Fredoka', sans-serif;       /* Logo and playful text */
+  --tn-font-monospace: 'Consolas', 'Monaco', 'Courier New', monospace; /* Code snippets and technical text */
+  
+  /* Base typography */
+  font-family: var(--tn-font-body);
+  font-size: 18px; /* Base font size - increases all rem values */
+  line-height: 1.5;
+  font-weight: 400;
+
+  /* System preferences */
+  color-scheme: light;
+  color: var(--tn-text);
+  background-color: var(--tn-background);
+
+  /* Rendering optimizations */
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  font-weight: 500;
+  color: var(--tn-primary);
+  text-decoration: inherit;
+}
+a:hover {
+  color: var(--tn-accent);
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+  color: var(--tn-text);
+  background-color: var(--tn-background);
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+  font-family: var(--tn-font-title);
+  color: var(--tn-primary);
+}
+
+h2, h3, h4, h5, h6 {
+  font-family: var(--tn-font-title);
+  color: var(--tn-primary);
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid var(--tn-accent);
+  padding: 0.6em 1.2em;
+  font-size: 1rem;
+  font-weight: 500;
+  font-family: var(--tn-font-body);
+  background-color: var(--tn-background);
+  color: var(--tn-text);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+button:hover {
+  border-color: var(--tn-primary);
+  background-color: var(--tn-accent);
+}
+
