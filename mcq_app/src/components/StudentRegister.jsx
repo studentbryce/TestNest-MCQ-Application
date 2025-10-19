@@ -6,7 +6,7 @@ function StudentRegister({ onNavigate }) {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
-    email: '',
+    username: '',
     studentId: '',
     password: '',
     confirmPassword: ''
@@ -21,7 +21,7 @@ function StudentRegister({ onNavigate }) {
     setError('')
 
     // Validation
-    if (!formData.firstName || !formData.lastName || !formData.email || 
+    if (!formData.firstName || !formData.lastName || !formData.username || 
         !formData.studentId || !formData.password || !formData.confirmPassword) {
       setError('Please fill in all fields')
       setIsLoading(false)
@@ -53,7 +53,7 @@ function StudentRegister({ onNavigate }) {
       const { data: existing, error: checkError } = await supabase
         .from('users')
         .select('studentid, username')
-        .or(`studentid.eq.${studentId},username.eq.${formData.email}`)
+        .or(`studentid.eq.${studentId},username.eq.${formData.username}`)
 
       if (checkError) {
         setError('Error checking existing users')
@@ -62,7 +62,7 @@ function StudentRegister({ onNavigate }) {
       }
 
       if (existing && existing.length > 0) {
-        setError('Student ID or email already registered')
+        setError('Student ID or username already registered')
         setIsLoading(false)
         return
       }
@@ -77,7 +77,7 @@ function StudentRegister({ onNavigate }) {
           studentid: studentId,
           firstname: formData.firstName,
           lastname: formData.lastName,
-          username: formData.email,
+          username: formData.username,
           password: hashedPassword,
           role: 'student'
         }])
@@ -169,14 +169,14 @@ function StudentRegister({ onNavigate }) {
           </div>
 
           <div className="form-group">
-            <label htmlFor="email">Email Address</label>
+            <label htmlFor="username">Username</label>
             <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
+              type="text"
+              id="username"
+              name="username"
+              value={formData.username}
               onChange={handleChange}
-              placeholder="your.email@student.edu"
+              placeholder="Choose a username"
               required
             />
           </div>
