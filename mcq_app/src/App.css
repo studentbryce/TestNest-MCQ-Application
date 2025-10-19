@@ -1729,6 +1729,14 @@ tbody tr:hover {
   opacity: 0.8;
 }
 
+.result-time {
+  color: var(--secondary-color);
+  font-size: 0.85rem;
+  opacity: 0.7;
+  margin-left: 0.75rem;
+  font-weight: 500;
+}
+
 .result-score {
   font-size: 1.5rem;
   font-weight: 700;
@@ -1920,6 +1928,17 @@ tbody tr:hover {
     flex-direction: column;
     gap: 0.5rem;
     align-items: flex-start;
+  }
+  
+  .result-title {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  
+  .result-time {
+    margin-left: 0;
+    font-size: 0.8rem;
   }
   
   .result-details {

@@ -58,6 +58,7 @@ function StudentResults({ student }) {
             testid,
             questionid,
             givenanswer,
+            created_at,
             tests (
               testtitle,
               testdescription,
@@ -105,7 +106,8 @@ function StudentResults({ student }) {
               totalQuestions: 0,
               correctAnswers: 0,
               score: 0,
-              dateTaken: new Date().toISOString().split('T')[0], // Mock date for now
+              dateTaken: result.created_at,
+              submissionTime: result.created_at,
               duration: `${result.tests.timelimit} minutes`,
               status: 'completed',
               details: []
@@ -201,9 +203,12 @@ function StudentResults({ student }) {
               </div>
             </div>
             <div className="summary-stat">
-              <h4>📅 Date Taken</h4>
-              <div className="stat-number" style={{ fontSize: '1.2rem' }}>
-                {new Date(selectedResult.dateTaken).toLocaleDateString()}
+              <h4>📅 Submitted</h4>
+              <div className="stat-number" style={{ fontSize: '1rem' }}>
+                {new Date(selectedResult.submissionTime).toLocaleDateString()}
+              </div>
+              <div className="stat-number" style={{ fontSize: '1rem', marginTop: '0.25rem' }}>
+                🕒 {new Date(selectedResult.submissionTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </div>
             </div>
             <div className="summary-stat">
@@ -293,7 +298,10 @@ function StudentResults({ student }) {
                       <div className="result-title">
                         <h4>{result.testTitle}</h4>
                         <span className="result-date">
-                          📅 {new Date(result.dateTaken).toLocaleDateString()}
+                          📅 {new Date(result.submissionTime).toLocaleDateString()}
+                        </span>
+                        <span className="result-time">
+                          🕒 {new Date(result.submissionTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </span>
                       </div>
                       <div className="result-score" style={{color: getScoreColor(result.score)}}>

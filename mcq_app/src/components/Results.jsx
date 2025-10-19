@@ -49,6 +49,7 @@ export default function Results() {
             testid,
             questionid,
             givenanswer,
+            created_at,
             tests (
               testtitle,
               testdescription,
@@ -87,7 +88,8 @@ export default function Results() {
               totalQuestions: 0,
               correctAnswers: 0,
               score: 0,
-              dateTaken: new Date().toISOString().split('T')[0],
+              dateTaken: result.created_at,
+              submissionTime: result.created_at,
               duration: `${result.tests.timelimit} minutes`,
               status: 'completed',
               details: []
@@ -355,7 +357,10 @@ export default function Results() {
                       <div className="result-title">
                         <h4>{result.testTitle}</h4>
                         <span className="result-date">
-                          📅 {new Date(result.dateTaken).toLocaleDateString()}
+                          📅 {new Date(result.submissionTime).toLocaleDateString()}
+                        </span>
+                        <span className="result-time">
+                          🕒 {new Date(result.submissionTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </span>
                       </div>
                       <div className="result-score" style={{ color: getScoreColor(result.score) }}>

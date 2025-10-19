@@ -55,6 +55,7 @@ CREATE TABLE Results (
     TestID INTEGER NOT NULL,
     QuestionID INTEGER NOT NULL,
     GivenAnswer INTEGER NOT NULL CHECK (GivenAnswer >= 1 AND GivenAnswer <= 4), -- 1=Choice1, 2=Choice2, 3=Choice3, 4=Choice4
+    created_at TIMESTAMPTZ DEFAULT ((NOW() AT TIME ZONE 'Pacific/Auckland') AT TIME ZONE 'UTC'), -- Store correct UTC time
     FOREIGN KEY (StudentID) REFERENCES Users(StudentID) ON DELETE CASCADE, -- if user is deleted, delete results
     FOREIGN KEY (TestID) REFERENCES Tests(TestID) ON DELETE CASCADE, -- if test is deleted, delete results
     FOREIGN KEY (QuestionID) REFERENCES Questions(QuestionID) ON DELETE CASCADE -- if question is deleted, delete results
