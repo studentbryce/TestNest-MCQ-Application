@@ -13,6 +13,40 @@ function StudentResults({ student }) {
       </span>
     ));
   };
+
+  // Helper function to format date/time from ISO string without timezone conversion
+  const formatDateTime = (isoString) => {
+    if (!isoString) return { date: '', time: '' };
+    
+    console.log('🕐 formatDate input:', isoString);
+    
+    // Parse ISO format: 2025-10-19T13:22:12.492Z
+    const regex = /(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})/;
+    const match = isoString.match(regex);
+    
+    if (match) {
+      const [, year, month, day, hour, minute] = match;
+      console.log('🕐 Parsed components:', { year, month, day, hour, minute });
+      
+      // Format date as DD/MM/YYYY
+      const formattedDate = `${day}/${month}/${year}`;
+      
+      // Format time as 12-hour with AM/PM
+      const hourNum = parseInt(hour);
+      const period = hourNum >= 12 ? 'PM' : 'AM';
+      const displayHour = hourNum === 0 ? 12 : hourNum > 12 ? hourNum - 12 : hourNum;
+      const formattedTime = `${displayHour}:${minute} ${period}`;
+      
+      console.log('🕐 Formatted output:', { date: formattedDate, time: formattedTime });
+      
+      return { date: formattedDate, time: formattedTime };
+    }
+    
+    // Fallback if regex doesn't match
+    console.log('🕐 No regex match, using fallback method');
+    console.warn('Date format not recognized:', isoString);
+    return { date: 'Invalid Date', time: 'Invalid Time' };
+  };
   const [results, setResults] = useState([])
   const [selectedResult, setSelectedResult] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -205,10 +239,10 @@ function StudentResults({ student }) {
             <div className="summary-stat">
               <h4>📅 Submitted</h4>
               <div className="stat-number" style={{ fontSize: '1rem' }}>
-                {new Date(selectedResult.submissionTime).toLocaleDateString()}
+                {formatDateTime(selectedResult.submissionTime).date}
               </div>
               <div className="stat-number" style={{ fontSize: '1rem', marginTop: '0.25rem' }}>
-                🕒 {new Date(selectedResult.submissionTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                🕒 {formatDateTime(selectedResult.submissionTime).time}
               </div>
             </div>
             <div className="summary-stat">
@@ -298,10 +332,10 @@ function StudentResults({ student }) {
                       <div className="result-title">
                         <h4>{result.testTitle}</h4>
                         <span className="result-date">
-                          📅 {new Date(result.submissionTime).toLocaleDateString()}
+                          📅 {formatDateTime(result.submissionTime).date}
                         </span>
                         <span className="result-time">
-                          🕒 {new Date(result.submissionTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          🕒 {formatDateTime(result.submissionTime).time}
                         </span>
                       </div>
                       <div className="result-score" style={{color: getScoreColor(result.score)}}>
