@@ -113,7 +113,9 @@ const TestsList = () => {
             testTitle: '',
             testDescription: '',
             timeLimit: 30,
-            questions: []
+            questions: [],
+            isAddingToExisting: false,
+            existingTestId: null
         });
         setCurrentQuestion({
             question: '',
@@ -225,12 +227,218 @@ const TestsList = () => {
         });
     };
 
-    // Remove question from test
+    // Remove question from test (during creation)
     const handleRemoveQuestion = (questionId) => {
         setNewTest(prev => ({
             ...prev,
             questions: prev.questions.filter(q => q.id !== questionId)
         }));
+    };
+
+    // Remove question from existing test
+    const handleRemoveQuestionFromTest = async (questionId) => {
+        if (!selectedTestId || !selectedTest) {
+            alert('No test selected');
+            return;
+        }
+
+        // Confirm deletion
+        const confirmDelete = window.confirm(
+            `Are you sure you want to remove this question from "${selectedTest.testtitle}"?\n\nThis action cannot be undone.`
+        );
+
+        if (!confirmDelete) {
+            return;
+        }
+
+        try {
+            // Remove the question from the test (delete from testquestions table)
+            const { error } = await supabase
+                .from('testquestions')
+                .delete()
+                .eq('testid', selectedTestId)
+                .eq('questionid', questionId);
+
+            if (error) {
+                console.error('Error removing question from test:', error);
+                alert('Error removing question from test. Please try again.');
+                return;
+            }
+
+            // Update the local questions state
+            setQuestions(prev => prev.filter(q => q.questionid !== questionId));
+            
+            alert('Question removed from test successfully!');
+
+        } catch (error) {
+            console.error('Error in handleRemoveQuestionFromTest:', error);
+            alert('Error removing question from test. Please try again.');
+        }
+    };
+
+    // Remove entire test from database
+    const handleRemoveTest = async (testId) => {
+        const testToRemove = tests.find(t => t.testid === testId);
+        
+        if (!testToRemove) {
+            alert('Test not found');
+            return;
+        }
+
+        // Confirm deletion
+        const confirmDelete = window.confirm(
+            `Are you sure you want to permanently delete the test "${testToRemove.testtitle}"?\n\nThis will remove:\n- The test itself\n- All questions associated with this test\n\nThis action cannot be undone.`
+        );
+
+        if (!confirmDelete) {
+            return;
+        }
+
+        try {
+            // First, remove all test-question associations
+            const { error: testQuestionsError } = await supabase
+                .from('testquestions')
+                .delete()
+                .eq('testid', testId);
+
+            if (testQuestionsError) {
+                console.error('Error removing test questions:', testQuestionsError);
+                alert('Error removing test questions. Please try again.');
+                return;
+            }
+
+            // Then, remove the test itself
+            const { error: testError } = await supabase
+                .from('tests')
+                .delete()
+                .eq('testid', testId);
+
+            if (testError) {
+                console.error('Error removing test:', testError);
+                alert('Error removing test. Please try again.');
+                return;
+            }
+
+            // Update the local tests state
+            setTests(prev => prev.filter(t => t.testid !== testId));
+            
+            // If we were viewing this test, go back to the tests list
+            if (selectedTestId === testId) {
+                setSelectedTestId(null);
+                setSelectedTest(null);
+                setQuestions([]);
+            }
+            
+            alert('Test deleted successfully!');
+
+        } catch (error) {
+            console.error('Error in handleRemoveTest:', error);
+            alert('Error deleting test. Please try again.');
+        }
+    };
+
+    // Handle adding question to existing test
+    const handleAddQuestionToTest = (testId) => {
+        // Set up form for adding question to existing test
+        setShowCreateForm(true);
+        setShowExistingQuestions(false);
+        
+        // Initialize form for adding to existing test
+        setNewTest({
+            testTitle: selectedTest?.testtitle || '',
+            testDescription: selectedTest?.testdescription || '',
+            timeLimit: selectedTest?.timelimit || 30,
+            questions: [],
+            isAddingToExisting: true,
+            existingTestId: testId
+        });
+        
+        setCurrentQuestion({
+            question: '',
+            choice1: '',
+            choice2: '',
+            choice3: '',
+            choice4: '',
+            answer: ''
+        });
+        
+        // Fetch existing questions for selection
+        fetchExistingQuestions();
+    };
+
+    // Save question(s) to existing test
+    const handleSaveQuestionToExistingTest = async () => {
+        if (newTest.questions.length === 0) {
+            alert('Please add at least one question.');
+            return;
+        }
+
+        try {
+            const testId = newTest.existingTestId;
+
+            // Process each question
+            for (const question of newTest.questions) {
+                let questionId;
+
+                if (question.isExisting) {
+                    // Check if question is already in this test
+                    const { data: existingLink, error: checkError } = await supabase
+                        .from('testquestions')
+                        .select('*')
+                        .eq('testid', testId)
+                        .eq('questionid', question.questionid)
+                        .single();
+
+                    if (checkError && checkError.code !== 'PGRST116') {
+                        throw checkError;
+                    }
+
+                    if (existingLink) {
+                        alert(`Question "${question.question}" is already in this test.`);
+                        continue;
+                    }
+
+                    questionId = question.questionid;
+                } else {
+                    // Create new question with integer answer
+                    const { data: questionData, error: questionError } = await supabase
+                        .from('questions')
+                        .insert({
+                            question: question.question,
+                            choice1: question.choice1,
+                            choice2: question.choice2,
+                            choice3: question.choice3,
+                            choice4: question.choice4,
+                            answer: question.answerNumber // Use integer value
+                        })
+                        .select()
+                        .single();
+
+                    if (questionError) throw questionError;
+                    questionId = questionData.questionid;
+                }
+
+                // Link question to test
+                const { error: linkError } = await supabase
+                    .from('testquestions')
+                    .insert({
+                        testid: testId,
+                        questionid: questionId
+                    });
+
+                if (linkError) throw linkError;
+            }
+
+            alert('Question(s) added to test successfully!');
+            
+            // Return to the questions view and refresh
+            setShowCreateForm(false);
+            await handleViewQuestions(testId);
+
+        } catch (error) {
+            console.error('Error adding questions to test:', error);
+            alert('Error adding questions to test. Please try again.');
+        }
     };
 
     // Save the complete test to database
@@ -304,7 +512,9 @@ const TestsList = () => {
                 testTitle: '',
                 testDescription: '',
                 timeLimit: 30,
-                questions: []
+                questions: [],
+                isAddingToExisting: false,
+                existingTestId: null
             });
             
             // Refresh tests list
@@ -322,14 +532,16 @@ const TestsList = () => {
         }
     };
 
-    // Cancel test creation
+    // Cancel test creation or question addition
     const cancelCreate = () => {
         setShowCreateForm(false);
         setNewTest({
             testTitle: '',
             testDescription: '',
             timeLimit: 30,
-            questions: []
+            questions: [],
+            isAddingToExisting: false,
+            existingTestId: null
         });
         setCurrentQuestion({
             question: '',
@@ -362,12 +574,21 @@ const TestsList = () => {
                                 <div className="test-item-header">
                                     <span className="test-id">📝 Test ID: {test.testid}</span>
                                     <span className="test-title">{test.testtitle}</span>
-                                    <button
-                                        className="test-questions-btn"
-                                        onClick={() => handleViewQuestions(test.testid)}
-                                    >
-                                        View Questions
-                                    </button>
+                                    <div className="test-item-buttons">
+                                        <button
+                                            className="test-questions-btn"
+                                            onClick={() => handleViewQuestions(test.testid)}
+                                        >
+                                            View Questions
+                                        </button>
+                                        <button
+                                            className="remove-test-btn danger"
+                                            onClick={() => handleRemoveTest(test.testid)}
+                                            title="Delete this test permanently"
+                                        >
+                                            🗑️ Remove Test
+                                        </button>
+                                    </div>
                                 </div>
                                 <p className="test-description">{test.testdescription}</p>
                                 <div className="test-meta">
@@ -389,49 +610,60 @@ const TestsList = () => {
             {showCreateForm && (
                 <div className="create-test-form">
                     <div className="form-header">
-                        <h3>✨ Create New Test</h3>
+                        <h3>{newTest.isAddingToExisting ? '➕ Add Questions to Test' : '✨ Create New Test'}</h3>
                         <button className="back-button" onClick={cancelCreate}>
                             ❌ Cancel
                         </button>
                     </div>
 
-                    {/* Test Information Section */}
-                    <div className="form-section">
-                        <h4>📋 Test Information</h4>
-                        <div className="form-group">
-                            <label>Test Title:</label>
-                            <input
-                                type="text"
-                                value={newTest.testTitle}
-                                onChange={(e) => setNewTest(prev => ({...prev, testTitle: e.target.value}))}
-                                placeholder="Enter test title..."
-                                className="form-input"
-                            />
-                        </div>
-                        
-                        <div className="form-group">
-                            <label>Test Description:</label>
-                            <textarea
-                                value={newTest.testDescription}
-                                onChange={(e) => setNewTest(prev => ({...prev, testDescription: e.target.value}))}
-                                placeholder="Enter test description..."
-                                className="form-textarea"
-                                rows="3"
-                            />
-                        </div>
+                    {/* Test Information Section - Only show when creating new test */}
+                    {!newTest.isAddingToExisting && (
+                        <div className="form-section">
+                            <h4>📋 Test Information</h4>
+                            <div className="form-group">
+                                <label>Test Title:</label>
+                                <input
+                                    type="text"
+                                    value={newTest.testTitle}
+                                    onChange={(e) => setNewTest(prev => ({...prev, testTitle: e.target.value}))}
+                                    placeholder="Enter test title..."
+                                    className="form-input"
+                                />
+                            </div>
+                            
+                            <div className="form-group">
+                                <label>Test Description:</label>
+                                <textarea
+                                    value={newTest.testDescription}
+                                    onChange={(e) => setNewTest(prev => ({...prev, testDescription: e.target.value}))}
+                                    placeholder="Enter test description..."
+                                    className="form-textarea"
+                                    rows="3"
+                                />
+                            </div>
 
-                        <div className="form-group">
-                            <label>Time Limit (minutes):</label>
-                            <input
-                                type="number"
-                                value={newTest.timeLimit}
-                                onChange={(e) => setNewTest(prev => ({...prev, timeLimit: parseInt(e.target.value) || 30}))}
-                                min="1"
-                                max="300"
-                                className="form-input"
-                            />
+                            <div className="form-group">
+                                <label>Time Limit (minutes):</label>
+                                <input
+                                    type="number"
+                                    value={newTest.timeLimit}
+                                    onChange={(e) => setNewTest(prev => ({...prev, timeLimit: parseInt(e.target.value) || 30}))}
+                                    min="1"
+                                    max="300"
+                                    className="form-input"
+                                />
+                            </div>
                         </div>
-                    </div>
+                    )}
+
+                    {/* Show current test info when adding to existing test */}
+                    {newTest.isAddingToExisting && (
+                        <div className="form-section existing-test-info">
+                            <h4>📋 Adding Questions to: "{newTest.testTitle}"</h4>
+                            <p className="test-info-description">{newTest.testDescription}</p>
+                            <p className="test-info-meta">⏱️ Time Limit: {newTest.timeLimit} minutes</p>
+                        </div>
+                    )}
 
                     {/* Questions Section */}
                     <div className="form-section">
@@ -590,9 +822,9 @@ const TestsList = () => {
                                             <span>
                                                 Question {index + 1} 
                                                 {q.isExisting ? (
-                                                    <span className="existing-badge">📚 Existing</span>
+                                                    <span className="existing-badge">📚 Existing Question</span>
                                                 ) : (
-                                                    <span className="new-badge">✏️ New</span>
+                                                    <span className="new-badge">✏️ New Question</span>
                                                 )}
                                             </span>
                                             <button 
@@ -613,13 +845,23 @@ const TestsList = () => {
 
                     {/* Form Actions */}
                     <div className="form-actions">
-                        <button 
-                            className="home-nav-btn primary"
-                            onClick={handleSaveTest}
-                            disabled={newTest.questions.length === 0}
-                        >
-                            💾 Save Test ({newTest.questions.length} questions)
-                        </button>
+                        {newTest.isAddingToExisting ? (
+                            <button 
+                                className="home-nav-btn primary"
+                                onClick={handleSaveQuestionToExistingTest}
+                                disabled={newTest.questions.length === 0}
+                            >
+                                ➕ Add to Test ({newTest.questions.length} questions)
+                            </button>
+                        ) : (
+                            <button 
+                                className="home-nav-btn primary"
+                                onClick={handleSaveTest}
+                                disabled={newTest.questions.length === 0}
+                            >
+                                💾 Save Test ({newTest.questions.length} questions)
+                            </button>
+                        )}
                         <button 
                             className="home-nav-btn secondary"
                             onClick={cancelCreate}
@@ -633,9 +875,17 @@ const TestsList = () => {
             {/* View Questions for Selected Test */}
             {selectedTestId && !showCreateForm && (
                 <div className="card">
-                    <button className="back-button" onClick={() => {setSelectedTestId(null); setSelectedTest(null);}}>
-                        ← Back to Tests
-                    </button>
+                    <div className="test-questions-header">
+                        <button className="back-button" onClick={() => {setSelectedTestId(null); setSelectedTest(null);}}>
+                            ← Back to Tests
+                        </button>
+                        <button 
+                            className="home-nav-btn primary"
+                            onClick={() => handleAddQuestionToTest(selectedTestId)}
+                        >
+                            ➕ Add Question
+                        </button>
+                    </div>
 
                     <h3 className="header">📝 Questions for Test ID {selectedTestId}: {selectedTest?.testtitle || 'Loading...'}</h3>
                     {questions.length > 0 ? (
@@ -647,6 +897,13 @@ const TestsList = () => {
                                     <li key={q.questionid} className="question-item">
                                         <div className="question-header">
                                             <h4>Question {index + 1}</h4>
+                                            <button 
+                                                className="remove-question-btn danger"
+                                                onClick={() => handleRemoveQuestionFromTest(q.questionid)}
+                                                title="Remove this question from the test"
+                                            >
+                                                🗑️ Remove
+                                            </button>
                                         </div>
                                         <p className="question-text">{formatTextWithLineBreaks(q.question)}</p>
                                         <ul className="choices-list">

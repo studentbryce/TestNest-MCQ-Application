@@ -225,6 +225,41 @@ nav button.active {
   min-width: 200px;
 }
 
+/* Remove Question Button */
+.remove-question-btn {
+  padding: 0.5rem 1rem;
+  border: 2px solid #dc3545;
+  background-color: #fff;
+  color: #dc3545;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: 0.5rem;
+}
+
+.remove-question-btn:hover {
+  background-color: #dc3545;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+.remove-question-btn.danger {
+  border-color: #dc3545;
+  color: #dc3545;
+}
+
+.remove-question-btn.danger:hover {
+  background-color: #dc3545;
+  color: white;
+}
+
 /* Demo Test Section */
 .demo-test-section {
   background-color: var(--card-background-color);
@@ -1036,11 +1071,81 @@ tbody tr:hover {
   border: solid 2px var(--accent-color);
 }
 
+/* Test Item Buttons Container */
+.test-item-buttons {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/* Remove Test Button */
+.remove-test-btn {
+  padding: 0.5rem 1rem;
+  border: 2px solid #dc3545;
+  background-color: #fff;
+  color: #dc3545;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.remove-test-btn:hover {
+  background-color: #dc3545;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+.remove-test-btn.danger {
+  border-color: #dc3545;
+  color: #dc3545;
+}
+
+.remove-test-btn.danger:hover {
+  background-color: #dc3545;
+  color: white;
+}
+
 .header-with-button {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
+}
+
+/* Test Questions Header Layout */
+.test-questions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+/* Existing Test Info Section */
+.existing-test-info {
+  background-color: rgba(167, 210, 203, 0.1);
+  border: 1px solid rgba(167, 210, 203, 0.3);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.test-info-description {
+  color: var(--text-color);
+  margin: 0.5rem 0;
+  font-style: italic;
+}
+
+.test-info-meta {
+  color: var(--primary-color);
+  font-weight: 600;
+  margin: 0.5rem 0 0 0;
 }
 
 /* Test Cards Grid */
@@ -1332,7 +1437,27 @@ tbody tr:hover {
   margin-top: 1rem;
 }
 
+.question-preview {
+  border: 1px solid var(--accent-color);
+  border-radius: 8px;
+  padding: 1rem;
+}
 
+.question-preview-header {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.new-badge {
+  color: var(--tn-accent-dark);
+  padding: 0.25rem 0.75rem;
+  border: 1px solid var(--tn-accent);
+  border-radius: 15px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-left: 0.5rem;
+}
 
 .number-badge {
   background: var(--primary-color);
