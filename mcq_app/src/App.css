@@ -1129,11 +1129,10 @@ tbody tr:hover {
 
 /* Existing Test Info Section */
 .existing-test-info {
-  background-color: rgba(167, 210, 203, 0.1);
-  border: 1px solid rgba(167, 210, 203, 0.3);
+  border: 1px solid var(--accent-color);
   border-radius: 8px;
   padding: 1rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
 }
 
 .test-info-description {
@@ -1228,6 +1227,13 @@ tbody tr:hover {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
+}
+
+.question-type-selector {
+  padding: 1rem;
+  display: flex;
+  gap: 0.5rem;
+  transition: var(--transition);
 }
 
 .questions-list {
@@ -2826,8 +2832,8 @@ tbody tr:hover {
 }
 
 .form-section {
-  padding: 2rem;
-  border-bottom: 1px solid rgba(var(--tn-primary-rgb), 0.1);
+  padding: 1rem;
+  margin: 1rem;
 }
 
 .form-section:last-child {
