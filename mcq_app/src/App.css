@@ -562,7 +562,7 @@ nav button.active {
 .form-group {
   display: flex;
   flex-direction: column;
-  margin: 1rem;
+  margin: 0.5rem 1rem;
 }
 
 .form-group label {
@@ -624,9 +624,8 @@ nav button.active {
 }
 
 .choices-grid {
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1rem;
-  margin: 1rem 0;
+  display: grid;
+  grid-template-columns: 1fr;
 }
 
 /* Question Form Submit Button */
@@ -909,6 +908,7 @@ tbody tr:hover {
 }
 
 .login-form {
+  padding: 0rem 0rem;
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
@@ -1132,7 +1132,7 @@ tbody tr:hover {
   border: 1px solid var(--accent-color);
   border-radius: 8px;
   padding: 1rem;
-  margin-bottom: 2rem;
+  margin: 1rem;
 }
 
 .test-info-description {
@@ -1274,8 +1274,9 @@ tbody tr:hover {
   white-space: pre-wrap; /* Preserve whitespace and line breaks */
   font-family: var(--font-monospace); /* Use monospace font for code */
   background-color: rgba(234, 215, 194, 0.2);
-  padding: 0.75rem;
-  border-radius: 6px;
+  padding: 1rem;
+  margin: 0.5rem 0;
+  border-radius: 8px;
   border: 1px solid rgba(167, 210, 203, 0.3);
   line-height: 1.5;
   overflow-x: auto; /* Allow horizontal scrolling for long code lines */
@@ -1322,12 +1323,19 @@ tbody tr:hover {
   margin-top: 0.5rem;
 }
 
+/* Question choices container - ensure vertical layout */
+.question-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
 /* Style for choices containing code */
 .question-choices span {
   display: block;
-  margin: 0.5rem 0;
-  padding: 0.5rem;
-  border-radius: 4px;
+  margin: 0.75rem 0;
+  padding: 0.75rem;
+  border-radius: 6px;
   border: 1px solid rgba(167, 210, 203, 0.3);
   background-color: rgba(255, 249, 229, 0.8);
   transition: var(--transition);
@@ -1393,11 +1401,17 @@ tbody tr:hover {
   margin: 0 0 1rem 0;
 }
 
+.existing-question-content .question-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
 .existing-question-content .question-choices span {
   display: block;
-  margin: 0.5rem 0;
-  padding: 0.75rem;
-  border-radius: 6px;
+  margin: 0;
+  padding: 1rem;
+  border-radius: 8px;
   border: 1px solid rgba(167, 210, 203, 0.3);
   background-color: rgba(255, 249, 229, 0.8);
   transition: var(--transition);
@@ -1489,7 +1503,7 @@ tbody tr:hover {
   margin-top: 1rem;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 1rem;
 }
 
 .choice-row {
@@ -2831,15 +2845,6 @@ tbody tr:hover {
   border: 1px solid rgba(var(--tn-primary-rgb), 0.1);
 }
 
-.form-section {
-  padding: 1rem;
-  margin: 1rem;
-}
-
-.form-section:last-child {
-  border-bottom: none;
-}
-
 .form-section h3 {
   color: var(--primary-color);
   font-family: var(--font-title);
@@ -2856,44 +2861,6 @@ tbody tr:hover {
   grid-template-columns: 1fr 1fr;
   gap: 1.5rem;
   margin-bottom: 1.5rem;
-}
-
-.form-group {
-  margin-bottom: 1.5rem;
-}
-
-.form-group label {
-  display: block;
-  font-weight: 600;
-  color: var(--primary-color);
-  margin-bottom: 0.5rem;
-  font-size: 1rem;
-}
-
-.form-group input,
-.form-group select {
-  width: 100%;
-  padding: 0.75rem 1rem;
-  border: 2px solid rgba(var(--tn-primary-rgb), 0.2);
-  border-radius: 8px;
-  font-size: 1rem;
-  color: var(--text-color);
-  background-color: var(--background-color);
-  transition: var(--transition);
-  font-family: var(--font-body);
-}
-
-.form-group input:focus,
-.form-group select:focus {
-  outline: none;
-  border-color: var(--accent-color);
-  box-shadow: 0 0 0 3px rgba(var(--tn-accent-rgb), 0.1);
-  transform: translateY(-1px);
-}
-
-.form-group input:hover,
-.form-group select:hover {
-  border-color: var(--secondary-color);
 }
 
 .form-value {
