@@ -333,7 +333,7 @@ function TutorProfile({ user }) {
                 />
               </div>
 
-              <div className="form-note" style={{ marginTop: '1rem', padding: '1rem', backgroundColor: '#f0f8ff', borderRadius: '8px' }}>
+              <div className="form-note" style={{ marginTop: '1rem', padding: '1rem', borderRadius: '8px' }}>
                 <p><strong>Password Requirements:</strong></p>
                 <ul style={{ marginLeft: '1.5rem', marginTop: '0.5rem' }}>
                   <li>Minimum 8 characters</li>
