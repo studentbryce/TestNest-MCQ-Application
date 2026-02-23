@@ -290,7 +290,7 @@ function TutorProfile({ user }) {
         <p>Loading profile...</p>
       ) : isChangingPassword ? (
         <div className="profile-content">
-          <div className="profile-form" style={{ maxWidth: '600px', margin: '0 auto' }}>
+          <div className="profile-form" style={{ maxWidth: '800px', margin: '0 auto' }}>
             <div className="form-section">
               <h3>🔒 Change Password</h3>
               
