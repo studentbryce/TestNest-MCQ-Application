@@ -18,7 +18,7 @@ function TutorRegister({ onNavigate }) {
   const [success, setSuccess] = useState(false)
 
   // You can change this access code to control tutor registration
-  const TUTOR_ACCESS_CODE = 'TUTOR2025'
+  const TUTOR_ACCESS_CODE = 'TUTOR2026'
 
   const handleSubmit = async (e) => {
     e.preventDefault()

@@ -2,6 +2,7 @@ import UserList from './UserList'
 import TestList from './TestList'
 import QuestionList from './QuestionList'
 import Results from './Results'
+import TutorProfile from './TutorProfile'
 
 function Dashboard({ user, onLogout, activeTab, setActiveTab }) {
   const renderTab = () => {
@@ -14,6 +15,8 @@ function Dashboard({ user, onLogout, activeTab, setActiveTab }) {
         return <QuestionList />
       case 'results':
         return <Results />
+      case 'profile':
+        return <TutorProfile user={user} />
       default:
         return null
     }
@@ -61,6 +64,13 @@ function Dashboard({ user, onLogout, activeTab, setActiveTab }) {
           className={`nav-btn ${activeTab === 'results' ? 'active' : ''}`}
         >
           📊 Results
+        </button>
+
+        <button
+          onClick={() => setActiveTab('profile')}
+          className={`nav-btn ${activeTab === 'profile' ? 'active' : ''}`}
+        >
+          👤 Profile
         </button>
       </nav>
 
