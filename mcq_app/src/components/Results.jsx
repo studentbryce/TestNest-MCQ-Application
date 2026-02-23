@@ -106,15 +106,21 @@ export default function Results() {
           return
         }
 
-        // Group results by test and calculate scores
+        // Group results by test attempt (testid + created_at)
+        // This ensures multiple attempts of the same test are shown separately
         const testResults = {}
 
         rawResults.forEach(result => {
           const testId = result.testid
+          // Create a unique key for each test attempt by combining testid and created_at
+          // Round to nearest minute to group answers from the same test session
+          const attemptTime = new Date(result.created_at)
+          const attemptKey = `${testId}_${attemptTime.toISOString().substring(0, 16)}` // YYYY-MM-DDTHH:MM
 
-          if (!testResults[testId]) {
-            testResults[testId] = {
+          if (!testResults[attemptKey]) {
+            testResults[attemptKey] = {
               id: testId,
+              attemptKey: attemptKey,
               testTitle: result.tests.testtitle,
               description: result.tests.testdescription,
               timeLimit: result.tests.timelimit,
@@ -171,11 +177,16 @@ export default function Results() {
           console.log(`Is Correct: ${isCorrect}`)
           console.log('---')
           if (isCorrect) {
-            testResults[testId].correctAnswers++
+            testResults[attemptKey].correctAnswers++
           }
 
-          testResults[testId].totalQuestions++
-          testResults[testId].details.push({
+          // Update submission time to latest timestamp in this attempt
+          if (new Date(result.created_at) > new Date(testResults[attemptKey].submissionTime)) {
+            testResults[attemptKey].submissionTime = result.created_at
+          }
+
+          testResults[attemptKey].totalQuestions++
+          testResults[attemptKey].details.push({
             question: result.questions.question,
             yourAnswer: studentAnswerText, // Display student's answer as text
             correct: isCorrect,
@@ -183,11 +194,13 @@ export default function Results() {
           })
         })
 
-        // Calculate final scores
-        const formattedResults = Object.values(testResults).map(test => ({
-          ...test,
-          score: Math.round((test.correctAnswers / test.totalQuestions) * 100)
-        }))
+        // Calculate final scores and sort by submission time (newest first)
+        const formattedResults = Object.values(testResults)
+          .map(test => ({
+            ...test,
+            score: Math.round((test.correctAnswers / test.totalQuestions) * 100)
+          }))
+          .sort((a, b) => new Date(b.submissionTime) - new Date(a.submissionTime))
 
         setResults(formattedResults)
       } catch (error) {
@@ -389,7 +402,7 @@ export default function Results() {
               <div className="results-list">
                 <h3>📋 Test History</h3>
                 {results.map((result) => (
-                  <div key={result.id} className="result-item">
+                  <div key={result.attemptKey} className="result-item">
                     <div className="result-header">
                       <div className="result-title">
                         <h4>{result.testTitle}</h4>
