@@ -290,7 +290,7 @@ function TutorProfile({ user }) {
         <p>Loading profile...</p>
       ) : isChangingPassword ? (
         <div className="profile-content">
-          <div className="profile-form">
+          <div className="profile-form" style={{ maxWidth: '600px', margin: '0 auto' }}>
             <div className="form-section">
               <h3>🔒 Change Password</h3>
               
@@ -303,6 +303,7 @@ function TutorProfile({ user }) {
                   value={passwordData.currentPassword}
                   onChange={handlePasswordDataChange}
                   placeholder="Enter current password"
+                  style={{ width: '100%' }}
                 />
               </div>
 
@@ -315,6 +316,7 @@ function TutorProfile({ user }) {
                   value={passwordData.newPassword}
                   onChange={handlePasswordDataChange}
                   placeholder="Enter new password (min 8 characters)"
+                  style={{ width: '100%' }}
                 />
               </div>
 
@@ -327,6 +329,7 @@ function TutorProfile({ user }) {
                   value={passwordData.confirmPassword}
                   onChange={handlePasswordDataChange}
                   placeholder="Re-enter new password"
+                  style={{ width: '100%' }}
                 />
               </div>
 
