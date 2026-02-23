@@ -1,4 +1,5 @@
 import TestNestLogo from '../images/TestNestLogo.png'
+import TestnestQRcode from '../images/TestnestQRcode.png'
 import { useState } from 'react'
 import { demoQuestions } from '../data/demoQuestions'
 
@@ -312,6 +313,42 @@ function Home({ onNavigate }) {
       <div className="mobile-app-section">
         <h2>📲 Get the TestNest Mobile App</h2>
         <p>Take your learning on the go with our dedicated mobile application</p>
+        
+        <div className="qr-code-section" style={{ 
+          display: 'flex', 
+          flexDirection: 'column', 
+          alignItems: 'center', 
+          margin: '2rem 0',
+          padding: '2rem',
+          background: 'linear-gradient(135deg, rgba(var(--tn-primary-rgb), 0.05), rgba(var(--tn-accent-rgb), 0.05))',
+          borderRadius: '16px',
+          border: '2px solid rgba(var(--tn-primary-rgb), 0.1)'
+        }}>
+          <h3 style={{ marginBottom: '1rem', color: 'var(--primary-color)' }}>📱 Scan to Download</h3>
+          <img 
+            src={TestnestQRcode} 
+            alt="Download TestNest Mobile App" 
+            style={{ 
+              width: '200px', 
+              height: '200px',
+              border: '4px solid white',
+              borderRadius: '12px',
+              boxShadow: '0 8px 24px rgba(0, 0, 0, 0.15)',
+              background: 'white',
+              padding: '10px'
+            }} 
+          />
+          <p style={{ 
+            marginTop: '1rem', 
+            fontSize: '0.95rem', 
+            color: 'var(--text-secondary)',
+            textAlign: 'center',
+            maxWidth: '400px'
+          }}>
+            Scan this QR code with your mobile device to download the TestNest app via Expo
+          </p>
+        </div>
+
         <div className="app-download-buttons">
           <button 
             className="app-store-button ios-button"
